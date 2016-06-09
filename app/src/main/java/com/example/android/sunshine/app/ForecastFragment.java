@@ -16,9 +16,11 @@
 package com.example.android.sunshine.app;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.text.format.Time;
 import android.util.Log;
@@ -78,15 +80,15 @@ public class ForecastFragment extends Fragment {
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
 
-//            SharedPreferences settings =
-//                    PreferenceManager.getDefaultSharedPreferences(getActivity());
-//
-//            String defaultLocation = getString(R.string.pref_default_location);
-//            String locationKey = getString(R.string.pref_location_key);
-//
-//            String s = settings.getString(locationKey, defaultLocation);
+            // Fetch the stored location ID. Changable by the user through settings
+            SharedPreferences settings =
+                    PreferenceManager.getDefaultSharedPreferences(
+                            getActivity().getApplicationContext());
 
-            new FetchWeatherTask().execute("2711533");          // Göteborgs kommun: 2711533
+            String locationId = settings.getString(getString(R.string.pref_location_key),
+                    getString(R.string.pref_default_location));
+
+            new FetchWeatherTask().execute(locationId);          // Göteborgs kommun: 2711533
             return true;
         }
         return super.onOptionsItemSelected(item);
