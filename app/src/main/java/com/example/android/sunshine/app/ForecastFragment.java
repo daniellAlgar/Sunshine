@@ -33,6 +33,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -101,18 +102,6 @@ public class ForecastFragment extends Fragment {
 
         final String LOG_TAG = getClass().getSimpleName();
 
-        // Create some dummy data for the ListView.  Here's a sample weekly forecast
-//        String[] data = {
-//                "Mon 6/23 - Sunny - 31/17",
-//                "Tue 6/24 - Foggy - 21/8",
-//                "Wed 6/25 - Cloudy - 22/17",
-//                "Thurs 6/26 - Rainy - 18/11",
-//                "Fri 6/27 - Foggy - 21/10",
-//                "Sat 6/28 - TRAPPED IN WEATHERSTATION - 23/18",
-//                "Sun 6/29 - Sunny - 20/7"
-//        };
-//        List<String> weekForecast = new ArrayList<String>(Arrays.asList(data));
-
         // Now that we have some dummy forecast data, create an ArrayAdapter.
         // The ArrayAdapter will take data from a source (like our dummy forecast) and
         // use it to populate the ListView it's attached to.
@@ -137,6 +126,7 @@ public class ForecastFragment extends Fragment {
             }
         });
 
+        updateWeather();
         return rootView;
     }
 
@@ -238,13 +228,27 @@ public class ForecastFragment extends Fragment {
                 double high = temperatureObject.getDouble(OWM_MAX);
                 double low = temperatureObject.getDouble(OWM_MIN);
 
+                SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(
+                        getActivity().getApplicationContext());
+
+                String userMetric = settings.getString(getString(R.string.pref_units_key),
+                        getString(R.string.pref_units_metric));
+
+                if ( userMetric.equals(getString(R.string.pref_units_imperial)) ) {
+                    high = metricToImperialDegrees(high);
+                    low = metricToImperialDegrees(low);
+                }
                 highAndLow = formatHighLows(high, low);
                 resultStrs[i] = day + " - " + description + " - " + highAndLow;
             }
 
             return resultStrs;
-
         }
+
+        public double metricToImperialDegrees(double metric) {
+            return ((metric * 9)/5) + 32;
+        }
+
         @Override
         protected String[] doInBackground(String... params) {
 
@@ -313,14 +317,16 @@ public class ForecastFragment extends Fragment {
                     // Stream was empty.  No point in parsing.
                     return null;
                 }
+
                 forecastJsonStr = buffer.toString();
                 // TODO: {"cod":"404","message":"Error: Not found city"} returned on postal codes
-                // not found but ListView still contains the previous data and no info to the user
+                // not found but ListView still contains the previous (or no) data. A Toast is
+                // currently showed to the user
 
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Error ", e);
-                // If the code didn't successfully get the weather data, there's no point in attemping
-                // to parse it.
+                Toast.makeText(getActivity().getApplicationContext(), e.getMessage(),
+                        Toast.LENGTH_LONG).show();
                 return null;
             } finally {
                 if (urlConnection != null) {
@@ -331,6 +337,8 @@ public class ForecastFragment extends Fragment {
                         reader.close();
                     } catch (final IOException e) {
                         Log.e(LOG_TAG, "Error closing stream", e);
+                        Toast.makeText(getActivity().getApplicationContext(), e.getMessage(),
+                                Toast.LENGTH_LONG).show();
                     }
                 }
             }
