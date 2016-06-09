@@ -8,9 +8,17 @@
     <string name="title_activity_detail">DetailActivity</string>
     <string name="title_activity_settings">Settings</string>
 
-    <!--pref_general.xml        Göteborg: 2711533 -->
+    <!--pref_general.xml        Göteborg: 41661, Kiruna: 98138 -->
     <string name="pref_location_label">Location</string>
     <string name="pref_location_key" translatable="false">loc</string>
-    <string name="pref_default_location" translatable="false">2711533</string>
+    <string name="pref_default_location" translatable="false">41661</string>
+
+    <!--pref_general.xml ListPreference for "Temperature Units"-->
+    <string name="pref_units_label_metric">Metric</string>
+    <string name="pref_units_label_imperial">Imperial</string>
+    <string name="pref_units_metric" translatable="false">metric</string>
+    <string name="pref_units_imperial" translatable="false">imperial</string>
+    <string name="pref_units_key" translatable="false">units</string>
+    <string name="pref_units_title">Temperature Units</string>
 
 </resources>

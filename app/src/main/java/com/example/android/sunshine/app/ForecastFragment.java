@@ -46,8 +46,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Encapsulates fetching the forecast and displaying it as a {@link ListView} layout.
@@ -72,6 +70,18 @@ public class ForecastFragment extends Fragment {
         inflater.inflate(R.menu.forecastfragment, menu);
     }
 
+    private void updateWeather() {
+        // Fetch the stored location ID. Changable by the user through settings
+        SharedPreferences settings =
+                PreferenceManager.getDefaultSharedPreferences(
+                        getActivity().getApplicationContext());
+
+        String locationId = settings.getString(getString(R.string.pref_location_key),
+                getString(R.string.pref_default_location));
+
+        new FetchWeatherTask().execute(locationId);          // Göteborgs kommun: 2711533
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -79,16 +89,7 @@ public class ForecastFragment extends Fragment {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
-
-            // Fetch the stored location ID. Changable by the user through settings
-            SharedPreferences settings =
-                    PreferenceManager.getDefaultSharedPreferences(
-                            getActivity().getApplicationContext());
-
-            String locationId = settings.getString(getString(R.string.pref_location_key),
-                    getString(R.string.pref_default_location));
-
-            new FetchWeatherTask().execute(locationId);          // Göteborgs kommun: 2711533
+            updateWeather();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -101,25 +102,25 @@ public class ForecastFragment extends Fragment {
         final String LOG_TAG = getClass().getSimpleName();
 
         // Create some dummy data for the ListView.  Here's a sample weekly forecast
-        String[] data = {
-                "Mon 6/23 - Sunny - 31/17",
-                "Tue 6/24 - Foggy - 21/8",
-                "Wed 6/25 - Cloudy - 22/17",
-                "Thurs 6/26 - Rainy - 18/11",
-                "Fri 6/27 - Foggy - 21/10",
-                "Sat 6/28 - TRAPPED IN WEATHERSTATION - 23/18",
-                "Sun 6/29 - Sunny - 20/7"
-        };
-        List<String> weekForecast = new ArrayList<String>(Arrays.asList(data));
+//        String[] data = {
+//                "Mon 6/23 - Sunny - 31/17",
+//                "Tue 6/24 - Foggy - 21/8",
+//                "Wed 6/25 - Cloudy - 22/17",
+//                "Thurs 6/26 - Rainy - 18/11",
+//                "Fri 6/27 - Foggy - 21/10",
+//                "Sat 6/28 - TRAPPED IN WEATHERSTATION - 23/18",
+//                "Sun 6/29 - Sunny - 20/7"
+//        };
+//        List<String> weekForecast = new ArrayList<String>(Arrays.asList(data));
 
         // Now that we have some dummy forecast data, create an ArrayAdapter.
         // The ArrayAdapter will take data from a source (like our dummy forecast) and
         // use it to populate the ListView it's attached to.
         mForecastAdapter = new ArrayAdapter<String>(
-                        getActivity(), // The current context (this activity)
-                        R.layout.list_item_forecast, // The name of the layout ID.
-                        R.id.list_item_forecast_textview, // The ID of the textview to populate.
-                        weekForecast);
+                getActivity(), // The current context (this activity)
+                R.layout.list_item_forecast, // The name of the layout ID.
+                R.id.list_item_forecast_textview, // The ID of the textview to populate.
+                new ArrayList<String>());
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
@@ -137,6 +138,12 @@ public class ForecastFragment extends Fragment {
         });
 
         return rootView;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateWeather();
     }
 
     public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
@@ -259,18 +266,19 @@ public class ForecastFragment extends Fragment {
             int numDays = 7;
 
             try {
-                // http://api.openweathermap.org/data/2.5/forecast/daily?id=2711533&
+                // http://api.openweathermap.org/data/2.5/forecast/daily?zip=41661,se&
                 // mode=json&units=metric&cnt=7&APPID=9935097084fa5906bb9d7306e77f889f
                 final String FORECAST_BASE_URL =
                         "http://api.openweathermap.org/data/2.5/forecast/daily?";
-                final String QUERY_PARAM = "id";
+                final String QUERY_PARAM = "zip";
                 final String FORMAT_PARAM = "mode";
                 final String UNITS_PARAM = "units";
                 final String DAYS_PARAM = "cnt";
                 final String APPID_PARAM = "APPID";
+                final String COUNTRY_CODE = "se";
 
                 Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
-                        .appendQueryParameter(QUERY_PARAM, params[0])
+                        .appendQueryParameter(QUERY_PARAM, params[0] + "," + COUNTRY_CODE)
                         .appendQueryParameter(FORMAT_PARAM, format)
                         .appendQueryParameter(UNITS_PARAM, units)
                         .appendQueryParameter(DAYS_PARAM, Integer.toString(numDays))
@@ -306,6 +314,8 @@ public class ForecastFragment extends Fragment {
                     return null;
                 }
                 forecastJsonStr = buffer.toString();
+                // TODO: {"cod":"404","message":"Error: Not found city"} returned on postal codes
+                // not found but ListView still contains the previous data and no info to the user
 
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Error ", e);
