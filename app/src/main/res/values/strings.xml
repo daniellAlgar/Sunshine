@@ -26,5 +26,6 @@
 
     <!--meny/main.xml-->
     <string name="action_show_in_map">Show in Map</string>
+    <string name="action_share">Share</string>
 
 </resources>
