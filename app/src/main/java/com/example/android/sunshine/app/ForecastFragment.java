@@ -347,7 +347,6 @@ public class ForecastFragment extends Fragment {
                 return getWeatherDataFromJson(forecastJsonStr, numDays);
             } catch (JSONException e) {
                 Log.e(LOG_TAG, e.getMessage(), e);
-                e.printStackTrace();
             }
 
             // This will only happen if there was an error getting or parsing the forecast.

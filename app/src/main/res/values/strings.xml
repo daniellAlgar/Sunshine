@@ -21,4 +21,10 @@
     <string name="pref_units_key" translatable="false">units</string>
     <string name="pref_units_title">Temperature Units</string>
 
+    <string name="pref_location_in_maps_label">View location in maps</string>
+    <string name="pref_location_in_maps_key">locationInMaps</string>
+
+    <!--meny/main.xml-->
+    <string name="action_show_in_map">Show in Map</string>
+
 </resources>

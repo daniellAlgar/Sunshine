@@ -17,4 +17,8 @@
         android:entries="@array/pref_units_options"
         android:entryValues="@array/pref_units_values"
         android:defaultValue="@string/pref_units_metric" />
+
+    <!--<Preference-->
+        <!--android:title="@string/pref_location_in_maps_label"-->
+        <!--android:key="@string/pref_location_in_maps_key"/>-->
 </PreferenceScreen>
