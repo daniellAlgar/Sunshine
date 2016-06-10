@@ -29,8 +29,6 @@ public class DetailActivity extends ActionBarActivity {
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
         }
-
-
     }
 
     @Override
@@ -103,7 +101,6 @@ public class DetailActivity extends ActionBarActivity {
                             menu.findItem(R.id.menu_item_share));
 
             if (mShareActionProvider != null) {
-
 
                 mShareActionProvider.setShareIntent(createShareForecastIntent());
             } else {

@@ -6,14 +6,6 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 
-/**
- * A {@link PreferenceActivity} that presents a set of application settings.
- * <p>
- * See <a href="http://developer.android.com/design/patterns/settings.html">
- * Android Design: Settings</a> for design guidelines and the <a
- * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
- * API Guide</a> for more information on developing a Settings UI.
- */
 public class SettingsActivity extends PreferenceActivity
         implements Preference.OnPreferenceChangeListener {
 
@@ -29,29 +21,6 @@ public class SettingsActivity extends PreferenceActivity
         // updated when the preference changes.
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_location_key)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_units_key)));
-//        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_location_in_maps_key)));
-//
-//        Preference showLocationOnMapPref = (Preference) findPreference(getString(R.string.pref_location_in_maps_key));
-//        showLocationOnMapPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-//            @Override
-//            public boolean onPreferenceClick(Preference preference) {
-//                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(
-//                        getApplicationContext());
-//                String postalCode = sharedPreferences.getString(getString(R.string.pref_location_key),
-//                        getString(R.string.pref_default_location));
-//
-//                Intent intent = new Intent(Intent.ACTION_VIEW);
-//                intent.setData(Uri.parse("geo:0,0?postal_code=" + postalCode));
-//
-//                if (intent.resolveActivity(getPackageManager()) != null) {
-//                    startActivity(intent);
-//                } else {
-//                    Toast.makeText(getApplicationContext(), "No Maps application available",
-//                            Toast.LENGTH_LONG).show();
-//                }
-//                return false;
-//            }
-//        });
     }
 
     /**
