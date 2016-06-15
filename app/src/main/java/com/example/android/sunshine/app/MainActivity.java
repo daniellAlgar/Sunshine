@@ -16,10 +16,8 @@
 package com.example.android.sunshine.app;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -27,7 +25,7 @@ import android.view.MenuItem;
 
 public class MainActivity extends ActionBarActivity {
 
-    public final static String LOG_TAG = MainActivity.class.getSimpleName();
+    private final String LOG_TAG = MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,30 +56,13 @@ public class MainActivity extends ActionBarActivity {
         if (id == R.id.action_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
-        } else if ( id == R.id.action_map ) {
-            showLocationInMap();
         }
 
+        if (id == R.id.action_map) {
+            openPreferredLocationInMap();
+            return true;
+        }
         return super.onOptionsItemSelected(item);
-    }
-
-    public void showLocationInMap() {
-        SharedPreferences locationPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String location = locationPref.getString(getString(R.string.pref_location_key),
-                getString(R.string.pref_default_location));
-
-        Uri geoUri = Uri.parse("geo:0,0?")
-                .buildUpon()
-                .appendQueryParameter("q", location)
-                .build();
-
-        Log.v(LOG_TAG, "uri: " + geoUri.toString());
-
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(geoUri);  // TODO
-        if ( intent.resolveActivity(getPackageManager()) != null ) {
-            startActivity(intent);
-        }
     }
 
     private void openPreferredLocationInMap() {
