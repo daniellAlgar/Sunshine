@@ -37,7 +37,9 @@ public class ForecastAdapter extends CursorAdapter {
      */
     private String formatHighLows(double high, double low) {
         boolean isMetric = Utility.isMetric(mContext);
-        String highLowStr = Utility.formatTemperature(high, isMetric) + "/" + Utility.formatTemperature(low, isMetric);
+
+        String highLowStr = Utility.formatTemperature(mContext, high, isMetric) + "/" +
+                Utility.formatTemperature(mContext, low, isMetric);
         return highLowStr;
     }
 
@@ -87,15 +89,23 @@ public class ForecastAdapter extends CursorAdapter {
         final ViewHolder holder = (ViewHolder) view.getTag();
         final boolean isMetric = Utility.isMetric(context);
 
-        holder.icon.setImageResource(R.drawable.ic_launcher);
+
+        if (VIEW_TYPE_TODAY == getItemViewType(cursor.getPosition())) {
+            holder.icon.setImageResource(Utility.getArtResourceForWeatherCondition(
+                    cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID)));
+        } else if (VIEW_TYPE_FUTURE_DAY == getItemViewType(cursor.getPosition())) {
+            holder.icon.setImageResource(Utility.getIconResourceForWeatherCondition(
+                    cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID)));
+        }
+
         holder.date.setText(
                 Utility.getFriendlyDayString(context, cursor.getLong(ForecastFragment.COL_WEATHER_DATE)));
         holder.detail.setText(cursor.getString(ForecastFragment.COL_WEATHER_DESC));
         holder.high.setText(
-                Utility.formatTemperature(
+                Utility.formatTemperature(mContext,
                         cursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP), isMetric));
         holder.low.setText(
-                Utility.formatTemperature(
+                Utility.formatTemperature(mContext,
                         cursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP), isMetric));
     }
 
